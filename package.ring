@@ -15,8 +15,13 @@ aPackageInfo = [
 	],
 	:libs = 	[
 		[
-			:name = "",
-			:version = "",
+			:name = "stdlib",
+			:version = "1.0",
+			:providerusername = ""
+		],
+		[
+			:name = "weblibtools",
+			:version = "1.0",
 			:providerusername = ""
 		]
 	],
@@ -106,7 +111,6 @@ aPackageInfo = [
 		"ringlibs/weblib/ringapp/upload.ring",
 		"ringlibs/weblib/ringapp/users.ring",
 		"ringlibs/weblib/ringapp/webpage.ring",
-		"ringlibs/weblib/ringapp/wkhtmltopdf.exe",
 		"ringlibs/weblib/run.bat",
 		"ringlibs/weblib/test.bat",
 		"ringlibs/weblib/weblib.ring"
