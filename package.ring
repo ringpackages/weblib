@@ -45,6 +45,7 @@ aPackageInfo = [
 		"libraries/weblib/lib/prepare.ring",
 		"libraries/weblib/lib/scriptfunctions.ring",
 		"libraries/weblib/lib/stylefunctions.ring",
+		"libraries/weblib/lib/template.ring",
 		"libraries/weblib/lib/weblib.ring",
 		"libraries/weblib/lib/webpage.ring",
 		"libraries/weblib/lib/webpageelementsclasses.ring",
