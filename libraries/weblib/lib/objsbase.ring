@@ -1,14 +1,19 @@
 # The Ring Standard Library
 # Web Library
-# 2016-2018, Mahmoud Fayed <msfclipper@yahoo.com>
+# 2016-2026, Mahmoud Fayed <msfclipper@yahoo.com>
 
 Package System.Web
 
 	Class ObjsBase  From Application
 
-		cOutput = "" aObjs = []  
-
+		cOutput = "" aObjs = []
 		cAttrOutput = "" cStyleOutput = ""
+
+		# Each stack frame: [tag, contentBuf, extraClose, savedAttr, savedStyle, specialAttrs]
+		# savedAttr/savedStyle = parent's buffers saved when this child was pushed.
+		# specialAttrs = list of [name,value] pairs for element-specific HTML attrs
+		# (type, src, alt, rows, cols, action, method, target, multiple, min, max, checked).
+		aStack = []
 
 		AddAttribute(self,htmlcssattributes)
 		AddAttribute(self,aObjsAttributes)
@@ -16,40 +21,125 @@ Package System.Web
 		func getdata
 			return cOutput
 
-		func getobjsdata
-			TabPUSH()
-			for x in aObjs
-				cOutput += getTabs() + x.getdata() + nl
-			next
-			TabPOP()
+		func braceend
+			popTag()
 
-		Func addattributes 
-
+		func addattributes
 			cOutput += cAttrOutput
 
-		Func elementattribute cName
+		func elementattribute cName
 			cValue = getattribute(self,cName)
 			if cValue != NULL and cValue != "NULL"
 				cOutput += ' ' + cName + '="' + cValue + '"'
 			ok
 
-		Func elementattribute2 cName,cName2
+		func elementattribute2 cName,cName2
 			cValue = getattribute(self,cName)
 			if cValue != NULL and cValue != "NULL"
 				cOutput += ' ' + lower(cName2) + '="' + cValue + '"'
 			ok
 
-		Func AddStyle
-			
+		func AddStyle
 			if getattribute(self,"style") = "NULL"
-				cOutput += ' style="' 
-				cOutput += cStyleOutput	
-				cOutput += '">' + nl
+				cOutput += ' style="' + cStyleOutput + '">' + nl
 			else
-				cOutput += '>' + nl
+				cOutput += ">" + nl
 			ok
 
-		# Generated setter functions 
+		# Special element attribute setters.
+		# Write into the current stack frame's specialAttrs list (frame[6]).
+		# Context-aware: settitle checks if inside an <a> frame.
+
+		func settype cValue
+			if aStack
+				aStack[len(aStack)][6] + ["type", cValue]
+			ok
+
+		func setsrc cValue
+			if aStack
+				aStack[len(aStack)][6] + ["src", cValue]
+			ok
+
+		func setalt cValue
+			if aStack
+				aStack[len(aStack)][6] + ["alt", cValue]
+			ok
+
+		func setrows cValue
+			if aStack
+				aStack[len(aStack)][6] + ["rows", cValue]
+			ok
+
+		func setcols cValue
+			if aStack
+				aStack[len(aStack)][6] + ["cols", cValue]
+			ok
+
+		func setaction cValue
+			if aStack
+				aStack[len(aStack)][6] + ["action", cValue]
+			ok
+
+		func setmethod cValue
+			if aStack
+				aStack[len(aStack)][6] + ["method", cValue]
+			ok
+
+		func settarget cValue
+			if aStack
+				aStack[len(aStack)][6] + ["target", cValue]
+			ok
+
+		func setmultiple cValue
+			if aStack
+				aStack[len(aStack)][6] + ["multiple", cValue]
+			ok
+
+		func setmin cValue
+			if aStack
+				aStack[len(aStack)][6] + ["min", cValue]
+			ok
+
+		func setmax cValue
+			if aStack
+				aStack[len(aStack)][6] + ["max", cValue]
+			ok
+
+		func setchecked cValue
+			if aStack
+				aStack[len(aStack)][6] + ["checked", cValue]
+			ok
+
+		func settitle cValue
+			if aStack and aStack[len(aStack)][1] = "a"
+				aStack[len(aStack)][6] + ["linktitle", cValue]
+			else
+				Title = cValue
+			ok
+
+		func setlink cValue
+			if aStack
+				aStack[len(aStack)][6] + ["href", cValue]
+			ok
+
+		func specialAttrsToStr aSpecial
+			cResult = ""
+			for item in aSpecial
+				if item[1] != "linktitle" and item[1] != "href"
+					cResult += " " + item[1] + '="' + item[2] + '"'
+				ok
+			next
+			return cResult
+
+		func getSpecialAttr aSpecial, cName
+			for item in aSpecial
+				if item[1] = cName
+					return item[2]
+				ok
+			next
+			return ""
+
+		# Generated setter functions
 
 		func setclassname  cValue
 			cAttrOutput += ' class = "' + cValue + '"'
